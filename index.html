@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO -->
+  <title>Sagar Aggarwal — JMeter plugins for performance engineers</title>
+  <meta name="description" content="Open-source JMeter plugins for pre-run audits, version control, browser-side metrics, and AI analysis. Built by a performance engineer with 18 years of experience." />
+  <meta name="author" content="Sagar Aggarwal" />
+
+  <!-- Open Graph (LinkedIn, Facebook, etc.) -->
+  <meta property="og:title" content="Sagar Aggarwal — JMeter plugins for performance engineers" />
+  <meta property="og:description" content="Open-source JMeter plugins for pre-run audits, version control, browser-side metrics, and AI analysis." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sagaraggarwal86.github.io/" />
+  <meta property="og:image" content="https://sagaraggarwal86.github.io/assets/sagar.jpg" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Sagar Aggarwal — JMeter plugins for performance engineers" />
+  <meta name="twitter:description" content="Open-source JMeter plugins for pre-run audits, version control, browser-side metrics, and AI analysis." />
+  <meta name="twitter:image" content="https://sagaraggarwal86.github.io/assets/sagar.jpg" />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='32' fill='%231D9E75'/><text x='32' y='42' font-family='-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif' font-size='28' font-weight='500' fill='white' text-anchor='middle'>SA</text></svg>" />
+
+  <style>
+    /* -----------------------------------
+       Design tokens (light + dark)
+       ----------------------------------- */
+    :root {
+      --bg: #ffffff;
+      --bg-alt: #f7f6f2;
+      --bg-card: #ffffff;
+      --text: #1a1a1a;
+      --text-soft: #5a5a58;
+      --text-muted: #888880;
+      --border: rgba(0, 0, 0, 0.12);
+      --border-strong: rgba(0, 0, 0, 0.22);
+      --accent: #1a1a1a;
+      --accent-text: #ffffff;
+      --link: #185fa5;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+
+      /* Plugin accent colors */
+      --c-amber: #ba7517;
+      --c-amber-bg: #faeeda;
+      --c-amber-text: #633806;
+      --c-purple: #7f77dd;
+      --c-purple-bg: #eeedfe;
+      --c-purple-text: #3c3489;
+      --c-gray: #888780;
+      --c-gray-bg: #f1efe8;
+      --c-gray-text: #444441;
+      --c-teal: #1d9e75;
+      --c-teal-bg: #e1f5ee;
+      --c-teal-text: #085041;
+      --c-coral: #d85a30;
+      --c-coral-bg: #faece7;
+      --c-coral-text: #712b13;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1a1a;
+        --bg-alt: #232321;
+        --bg-card: #2a2a28;
+        --text: #f0eee8;
+        --text-soft: #b8b6ae;
+        --text-muted: #88867e;
+        --border: rgba(255, 255, 255, 0.12);
+        --border-strong: rgba(255, 255, 255, 0.22);
+        --accent: #f0eee8;
+        --accent-text: #1a1a1a;
+        --link: #85b7eb;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+
+        --c-amber-bg: #412402;
+        --c-amber-text: #fac775;
+        --c-purple-bg: #26215c;
+        --c-purple-text: #cecbf6;
+        --c-gray-bg: #2c2c2a;
+        --c-gray-text: #d3d1c7;
+        --c-teal-bg: #04342c;
+        --c-teal-text: #9fe1cb;
+        --c-coral-bg: #4a1b0c;
+        --c-coral-text: #f5c4b3;
+      }
+    }
+
+    /* -----------------------------------
+       Reset + base
+       ----------------------------------- */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 { font-weight: 500; line-height: 1.3; margin: 0; }
+    p { margin: 0; }
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* -----------------------------------
+       Layout helpers
+       ----------------------------------- */
+    .wrap { max-width: 920px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* -----------------------------------
+       Hero
+       ----------------------------------- */
+    .hero {
+      text-align: center;
+      padding: 4rem 0 3rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .hero h1 {
+      font-size: 1.75rem;
+      max-width: 28rem;
+      margin: 0 auto 1rem;
+    }
+    .hero-sub {
+      color: var(--text-soft);
+      font-size: 0.9375rem;
+      max-width: 32rem;
+      margin: 0 auto 1.5rem;
+    }
+    .cta-row {
+      display: flex;
+      gap: 0.625rem;
+      justify-content: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.5rem 1.125rem;
+      border-radius: 0.5rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+      border: 0.5px solid var(--border-strong);
+      background: var(--bg);
+      color: var(--text);
+    }
+    .btn:hover { background: var(--bg-alt); text-decoration: none; }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-text);
+      border-color: var(--accent);
+    }
+    .btn-primary:hover { opacity: 0.85; background: var(--accent); color: var(--accent-text); }
+    .trust {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* -----------------------------------
+       Pipeline
+       ----------------------------------- */
+    .pipeline {
+      padding: 2.5rem 0;
+      background: var(--bg-alt);
+      border-bottom: 0.5px solid var(--border);
+    }
+    .pipeline-label, .section-label {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .pipeline-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .pipeline-step {
+      flex: 1;
+      padding: 0.625rem 0.5rem;
+      border-radius: 0.5rem;
+      text-align: center;
+      min-width: 0;
+    }
+    .pipeline-step .name { font-size: 0.8125rem; font-weight: 500; }
+    .pipeline-step .desc { font-size: 0.6875rem; opacity: 0.75; margin-top: 2px; }
+    .pipeline-arrow { color: var(--text-muted); font-size: 0.875rem; flex-shrink: 0; }
+    .step-amber { background: var(--c-amber-bg); color: var(--c-amber-text); }
+    .step-purple { background: var(--c-purple-bg); color: var(--c-purple-text); }
+    .step-gray { background: var(--c-gray-bg); color: var(--c-gray-text); }
+    .step-teal { background: var(--c-teal-bg); color: var(--c-teal-text); }
+    .step-coral { background: var(--c-coral-bg); color: var(--c-coral-text); }
+    .pipeline-note {
+      text-align: center;
+      font-size: 0.8125rem;
+      color: var(--text-soft);
+      margin-top: 1rem;
+      font-style: italic;
+    }
+
+    /* -----------------------------------
+       Plugin cards
+       ----------------------------------- */
+    .section { padding: 3rem 0; border-bottom: 0.5px solid var(--border); }
+    .section-label-left {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 0.5px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+    .card-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .card-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+    .dot-amber { background: var(--c-amber); }
+    .dot-purple { background: var(--c-purple); }
+    .dot-teal { background: var(--c-teal); }
+    .dot-coral { background: var(--c-coral); }
+    .card-name { font-size: 0.9375rem; font-weight: 500; }
+    .card-tag { font-size: 0.8125rem; color: var(--text-soft); margin-bottom: 0.75rem; }
+    .card-body { font-size: 0.8125rem; color: var(--text-soft); line-height: 1.7; flex-grow: 1; margin-bottom: 1rem; }
+    .card-actions {
+      display: flex;
+      gap: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 0.5px solid var(--border);
+    }
+    .card-actions .btn { padding: 0.375rem 0.75rem; font-size: 0.75rem; }
+
+    /* -----------------------------------
+       Quick start
+       ----------------------------------- */
+    .quickstart { background: var(--bg-alt); }
+    .qs-heading { font-size: 1rem; font-weight: 500; margin-bottom: 0.375rem; }
+    .qs-sub { font-size: 0.8125rem; color: var(--text-soft); margin-bottom: 1.25rem; }
+
+    .install-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .install-block {
+      background: var(--bg-card);
+      border: 0.5px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.125rem 1.25rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+    .install-block-primary {
+      border: 1.5px solid var(--c-teal);
+    }
+    .install-block-head {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.625rem;
+      flex-wrap: wrap;
+    }
+    .install-badge {
+      display: inline-block;
+      background: var(--c-teal-bg);
+      color: var(--c-teal-text);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      padding: 0.125rem 0.5rem;
+      border-radius: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .install-block-title {
+      font-size: 0.9375rem;
+      font-weight: 500;
+    }
+    .install-block-body {
+      font-size: 0.8125rem;
+      color: var(--text-soft);
+      line-height: 1.7;
+      margin: 0 0 0.625rem;
+    }
+    .install-block-body strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+    .install-block-note {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0;
+      padding-top: 0.625rem;
+      border-top: 0.5px solid var(--border);
+    }
+
+    .qs-code-wrap {
+      position: relative;
+      background: var(--bg-alt);
+      border: 0.5px solid var(--border);
+      border-radius: 0.5rem;
+    }
+    .qs-code {
+      padding: 0.875rem 1rem;
+      font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+      font-size: 0.75rem;
+      line-height: 1.9;
+      color: var(--text-soft);
+      margin: 0;
+      white-space: pre-wrap;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      padding: 0.25rem 0.625rem;
+      font-size: 0.6875rem;
+      border: 0.5px solid var(--border-strong);
+      border-radius: 0.375rem;
+      background: var(--bg);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .copy-btn:hover { background: var(--bg-alt); }
+    .copy-btn.copied { color: var(--c-teal); border-color: var(--c-teal); }
+
+    /* -----------------------------------
+       About
+       ----------------------------------- */
+    .about-row {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+    .about-photo {
+      flex-shrink: 0;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: #d6e7f9;
+      color: #185fa5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.25rem;
+      font-weight: 500;
+      border: 0.5px solid var(--border);
+      overflow: hidden;
+    }
+    .about-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .about-bio { flex: 1; min-width: 0; }
+    .about-bio p {
+      font-size: 0.875rem;
+      line-height: 1.75;
+      margin-bottom: 0.875rem;
+    }
+    .about-bio p:last-child { margin-bottom: 0; }
+    .about-bio strong { font-weight: 500; }
+    .about-tagline {
+      border-top: 0.5px solid var(--border);
+      padding-top: 0.875rem;
+      margin-top: 1.25rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: left;
+    }
+
+    /* -----------------------------------
+       Contact strip
+       ----------------------------------- */
+    .contact {
+      background: var(--bg-alt);
+      padding: 1.5rem 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .contact-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .contact-id { display: flex; align-items: center; gap: 0.75rem; }
+    .contact-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #d6e7f9;
+      color: #185fa5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      border: 0.5px solid var(--border);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .contact-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .contact-cap { font-size: 0.6875rem; color: var(--text-soft); }
+    .contact-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .contact-actions .btn { padding: 0.5rem 0.875rem; font-size: 0.75rem; }
+    .contact-actions svg { width: 14px; height: 14px; }
+
+    /* -----------------------------------
+       Footer
+       ----------------------------------- */
+    .footer {
+      padding: 1rem 0;
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    /* -----------------------------------
+       Responsive (mobile)
+       ----------------------------------- */
+    @media (max-width: 720px) {
+      .wrap { padding: 0 1rem; }
+
+      .hero { padding: 2.5rem 0 2rem; }
+      .hero h1 { font-size: 1.375rem; }
+
+      .pipeline-row { flex-wrap: wrap; gap: 0.5rem; }
+      .pipeline-step { flex: 0 0 calc(50% - 0.25rem); }
+      .pipeline-arrow { display: none; }
+
+      .cards { grid-template-columns: 1fr; }
+      .install-grid { grid-template-columns: 1fr; }
+
+      .about-row { flex-direction: column; align-items: center; text-align: left; }
+      .about-photo { width: 100px; height: 100px; font-size: 1.875rem; }
+
+      .contact-inner { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .contact-actions { width: 100%; }
+
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <h1>JMeter plugins for the gaps you keep working around.</h1>
+      <p class="hero-sub">
+        Built by a performance engineer, for performance engineers.
+      </p>
+      <div class="cta-row">
+        <a href="#plugins" class="btn btn-primary">Explore plugins ↓</a>
+      </div>
+      <div class="trust">Java 17 · JMeter 5.6.3 · Open source · Apache 2.0 licensed</div>
+    </div>
+  </section>
+
+  <!-- PIPELINE -->
+  <section class="pipeline">
+    <div class="wrap">
+      <div class="pipeline-label">Where each plugin sits in your workflow</div>
+      <div class="pipeline-row">
+        <div class="pipeline-step step-amber">
+          <div class="name">JMXAuditor</div>
+          <div class="desc">audit before run</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step step-purple">
+          <div class="name">JVCS</div>
+          <div class="desc">version control</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step step-gray">
+          <div class="name">Run test</div>
+          <div class="desc">JMeter</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step step-teal">
+          <div class="name">BPM</div>
+          <div class="desc">browser metrics</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step step-coral">
+          <div class="name">JAAR</div>
+          <div class="desc">AI report</div>
+        </div>
+      </div>
+      <div class="pipeline-note">Each plugin solves a different moment. Use any combination.</div>
+    </div>
+  </section>
+
+  <!-- PLUGIN CARDS -->
+  <section id="plugins" class="section">
+    <div class="wrap">
+      <div class="section-label-left">The plugins</div>
+      <div class="cards">
+
+        <!-- JMXAuditor -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-dot dot-amber"></span>
+            <span class="card-name">JMXAuditor</span>
+          </div>
+          <div class="card-tag">Catch test plan mistakes before you run.</div>
+          <p class="card-body">A four-hour load test fails in minute twelve — a hard-coded URL pointing at staging that should have been caught in review. This plugin scans your test plan for twenty-five common issues like this, before you hit start.</p>
+          <div class="card-actions">
+            <a href="https://github.com/sagaraggarwal86/JMXAuditor-jmeter-plugin/releases/latest" target="_blank" rel="noopener" class="btn btn-primary">Download</a>
+            <a href="https://github.com/sagaraggarwal86/JMXAuditor-jmeter-plugin" target="_blank" rel="noopener" class="btn">GitHub</a>
+          </div>
+        </div>
+
+        <!-- JVCS -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-dot dot-purple"></span>
+            <span class="card-name">JVCS</span>
+          </div>
+          <div class="card-tag">Version control for your test plans.</div>
+          <p class="card-body">One bad save can wipe out an afternoon of work on a test plan. JMeter has no undo for that. This plugin keeps a snapshot history of every save, and gives you one-click rollback when you need it.</p>
+          <div class="card-actions">
+            <a href="https://github.com/sagaraggarwal86/jmx-version-control-system/releases/latest" target="_blank" rel="noopener" class="btn btn-primary">Download</a>
+            <a href="https://github.com/sagaraggarwal86/jmx-version-control-system" target="_blank" rel="noopener" class="btn">GitHub</a>
+          </div>
+        </div>
+
+        <!-- BPM -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-dot dot-teal"></span>
+            <span class="card-name">BPM</span>
+          </div>
+          <div class="card-tag">Browser metrics, mapped to JMeter transactions.</div>
+          <p class="card-body">Your backend response time looks healthy. The user is still waiting six seconds for the page to feel ready. That gap — between server-side timing and what the browser actually rendered — is invisible in JMeter alone. This plugin maps browser-side metrics back to your transactions.</p>
+          <div class="card-actions">
+            <a href="https://github.com/sagaraggarwal86/BPM-jmeter-plugin/releases/latest" target="_blank" rel="noopener" class="btn btn-primary">Download</a>
+            <a href="https://github.com/sagaraggarwal86/BPM-jmeter-plugin" target="_blank" rel="noopener" class="btn">GitHub</a>
+          </div>
+        </div>
+
+        <!-- JAAR -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-dot dot-coral"></span>
+            <span class="card-name">JAAR</span>
+          </div>
+          <div class="card-tag">AI analysis on your JTL files.</div>
+          <p class="card-body">A JTL file from a serious load test can carry millions of rows. Reading it manually takes an hour. This plugin loads it, builds the aggregate report, and uses AI to walk you through the bottlenecks — in about a minute.</p>
+          <div class="card-actions">
+            <a href="https://github.com/sagaraggarwal86/JAAR-jmeter-plugin/releases/latest" target="_blank" rel="noopener" class="btn btn-primary">Download</a>
+            <a href="https://github.com/sagaraggarwal86/JAAR-jmeter-plugin" target="_blank" rel="noopener" class="btn">GitHub</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICK START -->
+  <section id="install" class="section quickstart">
+    <div class="wrap">
+      <div class="qs-heading">Quick start</div>
+      <div class="qs-sub">Two ways to install. Pick whichever fits how you work.</div>
+
+      <div class="install-grid">
+
+        <div class="install-block install-block-primary">
+          <div class="install-block-head">
+            <span class="install-badge">Recommended</span>
+            <span class="install-block-title">JMeter Plugins Manager</span>
+          </div>
+          <p class="install-block-body">
+            The fastest path. In JMeter, open <strong>Options &rarr; Plugins Manager &rarr; Available Plugins</strong>. Search for the plugin name &mdash; JMXAuditor, JVCS, BPM, or JAAR &mdash; check the box, click <strong>Apply Changes and Restart JMeter</strong>. Updates are handled automatically.
+          </p>
+          <p class="install-block-note">
+            All four plugins are already in use across the JMeter community. No Plugins Manager yet? <a href="https://jmeter-plugins.org/install/Install/" target="_blank" rel="noopener">Install it in one minute</a>.
+          </p>
+        </div>
+
+        <div class="install-block">
+          <div class="install-block-head">
+            <span class="install-block-title">Manual JAR install</span>
+          </div>
+          <div class="qs-code-wrap">
+            <button class="copy-btn" id="copyBtn" aria-label="Copy install steps">Copy</button>
+<pre class="qs-code" id="installCode">1. Download the JAR from any plugin's Releases page
+2. Drop it in &lt;JMETER_HOME&gt;/lib/ext/
+3. Restart JMeter
+4. Find the plugin under Listener / Pre-Processor menu</pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="section">
+    <div class="wrap">
+      <div class="section-label-left">About</div>
+      <div class="about-row">
+
+        <div class="about-photo">
+          <img src="assets/sagar.jpg" alt="Sagar Aggarwal" onerror="this.style.display='none'; this.parentNode.innerHTML='SA';" />
+        </div>
+
+        <div class="about-bio">
+          <p>Performance engineer, 18 years in. Most of that time has gone into the same set of problems — making sure systems hold up under real load, finding the bottleneck before production does, and turning numbers into something a stakeholder can actually use.</p>
+
+          <p>If you've ever stared at a failed overnight run, lost a test plan to one bad save, watched a backend look healthy while users complained, or scrolled through a JTL hoping the answer would jump out — you and I have shared the same nights.</p>
+
+          <p>These plugins came from those nights. <strong>JMXAuditor</strong> catches the test plan mistakes that cost me long nights. <strong>JVCS</strong> gives back the work I lost to one bad save. <strong>BPM</strong> closes the gap between backend numbers and what the user actually felt. <strong>JAAR</strong> turns a long JTL into a clear story.</p>
+
+          <p>AI made this realistic for one engineer working evenings and weekends. What would have taken months took weeks. I'm grateful for that.</p>
+
+          <p>If you're new to this craft, I hope these save you the long nights I had. If you've been at it a while, you'll recognise the pain.</p>
+        </div>
+
+      </div>
+      <div class="about-tagline">Built in the open. Free to use. Issues and pull requests welcome.</div>
+    </div>
+  </section>
+
+  <!-- CONTACT STRIP -->
+  <section class="contact">
+    <div class="wrap contact-inner">
+
+      <div class="contact-id">
+        <div class="contact-avatar">
+          <img src="assets/sagar.jpg" alt="Sagar Aggarwal" onerror="this.style.display='none'; this.parentNode.innerHTML='SA';" />
+        </div>
+        <div class="contact-cap">Get in touch</div>
+      </div>
+
+      <div class="contact-actions">
+        <a href="https://www.linkedin.com/in/sagar-aggarwal-011586/" target="_blank" rel="noopener" class="btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          LinkedIn
+        </a>
+        <a href="mailto:sagarhoney.aggarwal@gmail.com?subject=Hi%20from%20your%20JMeter%20plugins%20site" class="btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          Email
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <div>© 2026 Sagar Aggarwal</div>
+    </div>
+  </footer>
+
+  <script>
+    // Copy-to-clipboard for install snippet
+    (function () {
+      var btn = document.getElementById('copyBtn');
+      var code = document.getElementById('installCode');
+      if (!btn || !code) return;
+
+      btn.addEventListener('click', function () {
+        var text = code.innerText;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () { showCopied(); });
+        } else {
+          // Fallback for older browsers
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); showCopied(); } catch (e) {}
+          document.body.removeChild(ta);
+        }
+      });
+
+      function showCopied() {
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(function () {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 1800);
+      }
+    })();
+  </script>
+
+</body>
+</html>
